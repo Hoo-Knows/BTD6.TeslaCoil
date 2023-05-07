@@ -16,7 +16,7 @@
 			<HintPath>$(BloonsTD6)\Mods\PathsPlusPlus.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.ParticleSystemModule">
-		  <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\BloonsTD6\MelonLoader\Il2CppAssemblies\UnityEngine.ParticleSystemModule.dll</HintPath>
+		  <HintPath>$(BloonsTD6)\MelonLoader\Il2CppAssemblies\UnityEngine.ParticleSystemModule.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
