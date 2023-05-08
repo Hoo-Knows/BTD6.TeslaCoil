@@ -5,7 +5,7 @@
 
 <h1 align="center">Tesla Coil</h1>
 
-Adds a new Tack Shooter path with Paths++
+Adds a new Tack Shooter path with Paths++ themed around electricity.
 
 Thanks to everyone in the BTD Modding Discord who helped me with my first mod, in particular doombubbles and Onixiya whose code I referenced frequently.
 

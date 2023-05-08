@@ -5,6 +5,7 @@ using Il2Cpp;
 using Il2CppAssets.Scripts.Data;
 using Il2CppAssets.Scripts.Data.Bloons;
 using Il2CppAssets.Scripts.Unity.Display;
+using Il2CppAssets.Scripts.Unity.Display.Animation;
 using Il2CppAssets.Scripts.Utils;
 using Il2CppNinjaKiwi.Common;
 using System;
@@ -58,18 +59,20 @@ namespace TeslaCoil.Displays
         public override void ModifyDisplayNode(UnityDisplayNode node)
         {
 #if DEBUG
-            node.PrintInfo();
+			node.PrintInfo();
 #endif
-            foreach(var renderer in node.genericRenderers)
+			if(node.GetComponentInChildren<CustomSpriteFrameAnimator>())
+			{
+                Il2CppSystem.Collections.Generic.List<Sprite> frames = new Il2CppSystem.Collections.Generic.List<Sprite>();
+                frames.Add(GetSprite("ElectricShock1"));
+                frames.Add(GetSprite("ElectricShock2"));
+                frames.Add(GetSprite("ElectricShock3"));
+                frames.Add(GetSprite("ElectricShock4"));
+                node.GetComponentInChildren<CustomSpriteFrameAnimator>().frames = frames;
+            }
+            if(node.GetComponentInChildren<MeshRenderer>())
             {
-                if(renderer.Is<SpriteRenderer>(out var spriteRenderer))
-                {
-                    spriteRenderer.color = new Color(0.4f, 0.9f, 1f);
-                }
-                else if(renderer.Is<MeshRenderer>(out var meshRenderer))
-                {
-                    meshRenderer.SetMainTexture(GetTexture(CustomOverlayType));
-                }
+                node.GetComponentInChildren<MeshRenderer>().SetMainTexture(GetTexture(CustomOverlayType));
             }
         }
     }

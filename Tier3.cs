@@ -23,7 +23,7 @@ namespace TeslaCoil
 {
     public class HighVoltage : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 1500;
+        public override int Cost => 1200;
         public override int Tier => 3;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier3");
 		public override string Portrait => "HighVoltage";
@@ -42,12 +42,13 @@ namespace TeslaCoil
             lightningWeapon.name = "TeslaCoil_LightningWeapon";
 
             // Edit lightning projectile to split less
-            ProjectileModel lightning = lightningWeapon.projectile;
-            lightning.GetBehavior<LightningModel>().splitRange = towerModel.range / 3f;
-            lightning.GetBehavior<LightningModel>().splits = 1;
+            ProjectileModel lightningProjectile = lightningWeapon.projectile;
+            lightningProjectile.pierce = 3f;
+            lightningProjectile.GetBehavior<LightningModel>().splitRange = towerModel.range / 2.5f;
+            lightningProjectile.GetBehavior<LightningModel>().splits = 1;
 
-			// Tag the lightning effect with a unique guid 
-			CreateLightningEffectModel lightningEffect = new CreateLightningEffectModel("TeslaCoil_CreateLightningEffect", 0.3f,
+            // Tag the lightning effect with a unique guid 
+            CreateLightningEffectModel lightningEffect = new CreateLightningEffectModel("TeslaCoil_CreateLightningEffect", 0.3f,
 				new PrefabReference[]
 				{
 					new PrefabReference() { guidRef = "TeslaCoilLightning-LightningSmall1" },
@@ -72,13 +73,13 @@ namespace TeslaCoil
 					85.18519f,
 					85.18519f
 				});
-			lightning.RemoveBehavior<CreateLightningEffectModel>();
-			lightning.AddBehavior(lightningEffect);
+			lightningProjectile.RemoveBehavior<CreateLightningEffectModel>();
+			lightningProjectile.AddBehavior(lightningEffect);
 
 			// Add laser shock to lightning
 			AddBehaviorToBloonModel laserShock = towerModel.GetDescendant<AddBehaviorToBloonModel>().Duplicate();
-            lightning.AddBehavior(laserShock);
-            lightning.collisionPasses = new[] { 0, 1 };
+            lightningProjectile.AddBehavior(laserShock);
+            lightningProjectile.collisionPasses = new[] { 0, 1 };
 
             // Add first lightning weapon
             towerModel.GetAttackModel().name = "TeslaCoil_LightningAttack";
@@ -102,7 +103,6 @@ namespace TeslaCoil
             {
                 addBehavior.lifespan = 1.55f;
                 addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.5f;
-                addBehavior.GetBehavior<DamageOverTimeModel>().damage++;
             }
 
             if(IsHighestUpgrade(towerModel))

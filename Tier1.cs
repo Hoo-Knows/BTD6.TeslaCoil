@@ -15,7 +15,7 @@ namespace TeslaCoil
 {
 	public class ElectrifiedTacks : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 300;
+        public override int Cost => 250;
         public override int Tier => 1;
         public override string Icon => VanillaSprites.LaserShockUpgradeIcon;
 		public override string Portrait => "ElectrifiedTacks";

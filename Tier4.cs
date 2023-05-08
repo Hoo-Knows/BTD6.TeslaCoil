@@ -27,11 +27,11 @@ namespace TeslaCoil
 {
     public class EMP : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 3000;
+        public override int Cost => 4800;
         public override int Tier => 4;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier4");
 		public override string Portrait => "EMP";
-		public override string Description => "Periodically releases an EMP that stuns bloons and small MOABs.";
+		public override string Description => "Periodically releases an EMP that stuns nearby bloons and small MOABs.";
 
         public override void ApplyUpgrade(TowerModel towerModel, int tier)
         {
@@ -51,10 +51,11 @@ namespace TeslaCoil
             // Make EMP attack faster
             WeaponModel empWeapon = empAttack.weapons[0];
             float rate = 1.5f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.875f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.875f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.925f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.925f;
             empWeapon.Rate = rate;
             empWeapon.fireWithoutTarget = false;
+            empWeapon.projectile.GetBehavior<AgeModel>().Lifespan = 0.1f;
             empWeapon.RemoveBehavior<CritMultiplierModel>();
             empWeapon.name = "TeslaCoil_EMPWeapon";
 
@@ -72,20 +73,21 @@ namespace TeslaCoil
 
             // Shrink EMP projectile and nerf pierce and damage
             ProjectileModel empProjectile = empWeapon.projectile;
-            empProjectile.radius = towerModel.range + 1;
-            empProjectile.scale = towerModel.range + 1;
-            empProjectile.pierce = 200;
+            empProjectile.radius = towerModel.range + 1f;
+            empProjectile.scale = towerModel.range + 1f;
+            empProjectile.pierce = 200f;
             float damage = 2f;
             if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damage++;
             if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damage++;
             empProjectile.GetBehavior<DamageModel>().damage = damage / 2f;
 
-            // Add stun effect to EMP projectile
-            SlowModel slowModel = ninja.GetDescendant<SlowModel>().Duplicate();
-            slowModel.Lifespan = 0.7f;
-            slowModel.layers = 9999;
-            empProjectile.AddBehavior(slowModel);
-            empProjectile.AddBehavior(ninja.GetDescendant<SlowModifierForTagModel>().Duplicate());
+            // Add stun effect to EMP projectile - halved for MOABs and BFBs
+            empProjectile.AddBehavior(new SlowForBloonModel("SlowForBloonModel_", 0f, 0.6f, "Stun:Weak", 9999, "Stun", 
+                true, false, "Zomg,Ddt,Bad,Boss", "Zomg,Ddt,Bad,Boss", true, null, false, false, false, 0));
+            empProjectile.GetBehavior<SlowForBloonModel>().bloonIds = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
+            empProjectile.GetBehavior<SlowForBloonModel>().bloonTags = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
+            empProjectile.GetBehavior<SlowForBloonModel>().mutator = ninja.GetDescendant<SlowModel>().Mutator;
+            empProjectile.AddBehavior(new SlowModifierForTagModel("SlowModifierForTagModel_", "Moabs", "Stun:Weak", 1f, false, false, 0.3f, false));
 
             // Add laser shock to EMP projectile
             AddBehaviorToBloonModel laserShock = towerModel.GetDescendant<AddBehaviorToBloonModel>().Duplicate();
@@ -97,8 +99,9 @@ namespace TeslaCoil
             // Buff laser shock ticks
             foreach(AddBehaviorToBloonModel addBehavior in towerModel.GetDescendants<AddBehaviorToBloonModel>().ToArray())
             {
-                addBehavior.lifespan = 2.05f;
-                addBehavior.GetBehavior<DamageOverTimeModel>().damage += 2;
+                addBehavior.lifespan = 2.55f;
+                addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.25f;
+                addBehavior.GetBehavior<DamageOverTimeModel>().damage++;
             }
 
             // Buff lightning damage, pierce, and frequency
@@ -106,8 +109,8 @@ namespace TeslaCoil
             {
                 if(weaponModel.name == "TeslaCoil_LightningWeapon")
 				{
-                    weaponModel.projectile.pierce += 2;
-                    weaponModel.projectile.GetDamageModel().damage += 2;
+                    weaponModel.projectile.pierce += 3f;
+                    weaponModel.projectile.GetDamageModel().damage++;
                     weaponModel.Rate /= 1.5f;
 				}
             }

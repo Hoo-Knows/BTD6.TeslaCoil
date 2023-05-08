@@ -16,7 +16,7 @@ namespace TeslaCoil
 {
 	public class AmpedUpTacks : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 500;
+        public override int Cost => 450;
         public override int Tier => 2;
         public override string Icon => VanillaSprites.SpyPlaneUpgradeIcon;
 		public override string Portrait => "AmpedUpTacks";
@@ -29,12 +29,6 @@ namespace TeslaCoil
             towerModel.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
             towerModel.GetDescendants<DamageModel>().ForEach(model => model.immuneBloonProperties = BloonProperties.None);
             towerModel.GetDescendants<DamageOverTimeModel>().ForEach(model => model.immuneBloonProperties = BloonProperties.Purple);
-
-            // Buff laser shock ticks
-            foreach(AddBehaviorToBloonModel addBehavior in towerModel.GetDescendants<AddBehaviorToBloonModel>().ToArray())
-            {
-                addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.45f;
-            }
 
             if(IsHighestUpgrade(towerModel))
             {

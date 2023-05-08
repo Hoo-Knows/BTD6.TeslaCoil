@@ -7,7 +7,7 @@ public static class ModHelperData
     public const string Name = "Tesla Coil";
     public const string Author = "HooKnows";
 
-    public const string Description = "Adds a new Tack Shooter path with Paths++\n\n" +
+    public const string Description = "Adds a new Tack Shooter path with Paths++ themed around electricity.\n\n" +
 		                              "Thanks to everyone in the BTD Modding Discord who helped me with my first mod, in particular doombubbles and Onixiya whose code I referenced frequently.";
 
     public const string RepoOwner = "Hoo-Knows";

@@ -1,0 +1,5 @@
+- Balance changes
+	- Nerfed damage over time
+	- Tweaked prices
+	- Tweaked EMP stun durations and fire rates
+- Upgrade Electric Shock visuals

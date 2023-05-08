@@ -20,11 +20,6 @@ namespace TeslaCoil
             base.OnApplicationStart();
             MelonLogger.Msg("TeslaCoil loaded!");
 		}
-
-		public override void OnMainMenu()
-		{
-			base.OnMainMenu();
-		}
 	}
 
 	[HarmonyPatch(typeof(Factory.__c__DisplayClass21_0), "_CreateAsync_b__0")]
