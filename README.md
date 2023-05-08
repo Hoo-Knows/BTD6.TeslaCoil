@@ -9,4 +9,6 @@ Adds a new Tack Shooter path with Paths++
 
 Thanks to everyone in the BTD Modding Discord who helped me with my first mod, in particular doombubbles and Onixiya whose code I referenced frequently.
 
+![Screenshot](Screenshot.png)
+
 [![Requires BTD6 Mod Helper](https://raw.githubusercontent.com/gurrenm3/BTD-Mod-Helper/master/banner.png)](https://github.com/gurrenm3/BTD-Mod-Helper#readme)
