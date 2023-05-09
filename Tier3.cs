@@ -23,11 +23,11 @@ namespace TeslaCoil
 {
     public class HighVoltage : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 1200;
+        public override int Cost => 1300;
         public override int Tier => 3;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier3");
 		public override string Portrait => "HighVoltage";
-		public override string Description => "Discharges electricity in a small area.";
+		public override string Description => "Discharges electricity in a small area. Long and Super Range Tacks give more splitting.";
 
         public override void ApplyUpgrade(TowerModel towerModel, int tier)
         {
@@ -43,9 +43,12 @@ namespace TeslaCoil
 
             // Edit lightning projectile to split less
             ProjectileModel lightningProjectile = lightningWeapon.projectile;
-            lightningProjectile.pierce = 3f;
+            lightningProjectile.pierce = towerModel.GetAttackModel().weapons.First(w => w.name == "WeaponModel_Weapon").projectile.pierce + 2f;
             lightningProjectile.GetBehavior<LightningModel>().splitRange = towerModel.range / 2.5f;
-            lightningProjectile.GetBehavior<LightningModel>().splits = 1;
+            int splits = 1;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.LongRangeTacks)) splits++;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.SuperRangeTacks)) splits++;
+            lightningProjectile.GetBehavior<LightningModel>().splits = splits;
 
             // Tag the lightning effect with a unique guid 
             CreateLightningEffectModel lightningEffect = new CreateLightningEffectModel("TeslaCoil_CreateLightningEffect", 0.3f,

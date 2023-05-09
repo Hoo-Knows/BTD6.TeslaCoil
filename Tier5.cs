@@ -16,7 +16,7 @@ namespace TeslaCoil
 {
 	public class TeslaCoil : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 37500;
+        public override int Cost => 42500;
         public override int Tier => 5;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier5");
 		public override string Portrait => "TeslaCoil";
@@ -65,7 +65,10 @@ namespace TeslaCoil
             foreach(AddBehaviorToBloonModel behavior in towerModel.GetDescendants<AddBehaviorToBloonModel>().ToArray())
             {
                 behavior.lifespan = 5.05f;
-                behavior.GetBehavior<DamageOverTimeModel>().damage += 3f;
+                float damageBuff = 3f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damageBuff += 1.5f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damageBuff += 1.5f;
+                behavior.GetBehavior<DamageOverTimeModel>().damage += damageBuff;
             }
 
             // Buff lightning

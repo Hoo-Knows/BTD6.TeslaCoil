@@ -31,7 +31,7 @@ namespace TeslaCoil
         public override int Tier => 4;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier4");
 		public override string Portrait => "EMP";
-		public override string Description => "Periodically releases an EMP that stuns nearby bloons and small MOABs.";
+		public override string Description => "Periodically releases an EMP that stuns nearby bloons and small MOABs. More and Even More Tacks give additional damage over time.";
 
         public override void ApplyUpgrade(TowerModel towerModel, int tier)
         {
@@ -51,8 +51,8 @@ namespace TeslaCoil
             // Make EMP attack faster
             WeaponModel empWeapon = empAttack.weapons[0];
             float rate = 1.5f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.925f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.925f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.875f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.875f;
             empWeapon.Rate = rate;
             empWeapon.fireWithoutTarget = false;
             empWeapon.projectile.GetBehavior<AgeModel>().Lifespan = 0.1f;
@@ -76,10 +76,7 @@ namespace TeslaCoil
             empProjectile.radius = towerModel.range + 1f;
             empProjectile.scale = towerModel.range + 1f;
             empProjectile.pierce = 200f;
-            float damage = 2f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damage++;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damage++;
-            empProjectile.GetBehavior<DamageModel>().damage = damage / 2f;
+            empProjectile.GetBehavior<DamageModel>().damage = 1f;
 
             // Add stun effect to EMP projectile - halved for MOABs and BFBs
             empProjectile.AddBehavior(new SlowForBloonModel("SlowForBloonModel_", 0f, 0.6f, "Stun:Weak", 9999, "Stun", 
@@ -87,7 +84,7 @@ namespace TeslaCoil
             empProjectile.GetBehavior<SlowForBloonModel>().bloonIds = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
             empProjectile.GetBehavior<SlowForBloonModel>().bloonTags = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
             empProjectile.GetBehavior<SlowForBloonModel>().mutator = ninja.GetDescendant<SlowModel>().Mutator;
-            empProjectile.AddBehavior(new SlowModifierForTagModel("SlowModifierForTagModel_", "Moabs", "Stun:Weak", 1f, false, false, 0.3f, false));
+            empProjectile.AddBehavior(new SlowModifierForTagModel("SlowModifierForTagModel_", "Moabs", "Stun:Weak", 1f, false, false, 0.2f, false));
 
             // Add laser shock to EMP projectile
             AddBehaviorToBloonModel laserShock = towerModel.GetDescendant<AddBehaviorToBloonModel>().Duplicate();
@@ -101,7 +98,10 @@ namespace TeslaCoil
             {
                 addBehavior.lifespan = 2.55f;
                 addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.25f;
-                addBehavior.GetBehavior<DamageOverTimeModel>().damage++;
+                float damageBuff = 1f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damageBuff += 0.5f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damageBuff += 0.5f;
+                addBehavior.GetBehavior<DamageOverTimeModel>().damage += damageBuff;
             }
 
             // Buff lightning damage, pierce, and frequency
