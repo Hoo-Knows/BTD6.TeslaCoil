@@ -44,20 +44,20 @@ namespace TeslaCoil
             AttackModel empAttack = super.GetDescendants<AttackModel>().ToArray().First(a => a.name == "AttackModel_TechTerror_").Duplicate();
             empAttack.range = towerModel.range;
             empAttack.fireWithoutTarget = false;
-            empAttack.AddBehavior(new RandomTargetModel("RandomTargetModel", true, false));
+            empAttack.AddBehavior(new RandomTargetModel("RandomTargetModel_", true, false));
             empAttack.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
-            empAttack.name = "TeslaCoil_EMP";
+            empAttack.name = "AttackModel_EMP";
 
             // Make EMP attack faster
             WeaponModel empWeapon = empAttack.weapons[0];
             float rate = 1.5f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.875f;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.875f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.FasterShooting)) rate *= 0.9f;
+            if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenFasterShooting)) rate *= 0.9f;
             empWeapon.Rate = rate;
             empWeapon.fireWithoutTarget = false;
             empWeapon.projectile.GetBehavior<AgeModel>().Lifespan = 0.1f;
             empWeapon.RemoveBehavior<CritMultiplierModel>();
-            empWeapon.name = "TeslaCoil_EMPWeapon";
+            empWeapon.name = "WeaponModel_EMP";
 
             // Add visual effect to EMP
             WeaponModel empVisual = empWeapon.Duplicate();
@@ -68,18 +68,18 @@ namespace TeslaCoil
             if(towerModel.appliedUpgrades.Contains(UpgradeType.LongRangeTacks)) empVisual.projectile.ApplyDisplay<EMPDisplay1>();
             else if(towerModel.appliedUpgrades.Contains(UpgradeType.SuperRangeTacks)) empVisual.projectile.ApplyDisplay<EMPDisplay2>();
             else empVisual.projectile.ApplyDisplay<EMPDisplay>();
-            empVisual.name = "TeslaCoil_EMPVisual";
+            empVisual.name = "WeaponModel_EMPVisual";
             empAttack.AddWeapon(empVisual);
 
             // Shrink EMP projectile and nerf pierce and damage
             ProjectileModel empProjectile = empWeapon.projectile;
             empProjectile.radius = towerModel.range + 1f;
             empProjectile.scale = towerModel.range + 1f;
-            empProjectile.pierce = 200f;
+            empProjectile.pierce = 100f;
             empProjectile.GetBehavior<DamageModel>().damage = 1f;
 
             // Add stun effect to EMP projectile - halved for MOABs and BFBs
-            empProjectile.AddBehavior(new SlowForBloonModel("SlowForBloonModel_", 0f, 0.6f, "Stun:Weak", 9999, "Stun", 
+            empProjectile.AddBehavior(new SlowForBloonModel("SlowForBloonModel_", 0f, 0.4f, "Stun:Weak", 9999, "Stun", 
                 true, false, "Zomg,Ddt,Bad,Boss", "Zomg,Ddt,Bad,Boss", true, null, false, false, false, 0));
             empProjectile.GetBehavior<SlowForBloonModel>().bloonIds = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
             empProjectile.GetBehavior<SlowForBloonModel>().bloonTags = new string[] { "Zomg", "Ddt", "Bad", "Boss" };
@@ -98,20 +98,20 @@ namespace TeslaCoil
             {
                 addBehavior.lifespan = 2.55f;
                 addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.25f;
-                float damageBuff = 1f;
-                if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damageBuff += 0.5f;
-                if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damageBuff += 0.5f;
+                float damageBuff = 0f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.MoreTacks)) damageBuff += 2f;
+                if(towerModel.appliedUpgrades.Contains(UpgradeType.EvenMoreTacks)) damageBuff += 2f;
                 addBehavior.GetBehavior<DamageOverTimeModel>().damage += damageBuff;
             }
 
-            // Buff lightning damage, pierce, and frequency
+            // Buff lightning
             foreach(WeaponModel weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
             {
-                if(weaponModel.name == "TeslaCoil_LightningWeapon")
+                if(weaponModel.name.Contains("WeaponModel_TeslaCoilLightning"))
 				{
-                    weaponModel.projectile.pierce += 3f;
+                    weaponModel.projectile.pierce += 2f;
                     weaponModel.projectile.GetDamageModel().damage++;
-                    weaponModel.Rate /= 1.5f;
+                    weaponModel.Rate *= 0.75f;
 				}
             }
 

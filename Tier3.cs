@@ -23,11 +23,11 @@ namespace TeslaCoil
 {
     public class HighVoltage : UpgradePlusPlus<TeslaCoilPath>
     {
-        public override int Cost => 1300;
+        public override int Cost => 1100;
         public override int Tier => 3;
         public override string Icon => GetTextureGUID<TeslaCoilMod>("Tier3");
 		public override string Portrait => "HighVoltage";
-		public override string Description => "Discharges electricity in a small area. Long and Super Range Tacks give more splitting.";
+		public override string Description => "Discharges electricity in a small area. Super Range Tacks give more splitting.";
 
         public override void ApplyUpgrade(TowerModel towerModel, int tier)
         {
@@ -37,21 +37,20 @@ namespace TeslaCoil
 
             // Create lightning weapon and increase attack speed
             WeaponModel lightningWeapon = druid.GetAttackModel().weapons.First(w => w.name == "WeaponModel_Lightning").Duplicate();
-            lightningWeapon.Rate = towerModel.GetAttackModel().weapons.First(w => w.name == "WeaponModel_Weapon").Rate / 1.7f;
+            lightningWeapon.Rate = towerModel.GetAttackModel().weapons.First(w => w.name == "WeaponModel_Weapon").Rate * 0.75f;
             lightningWeapon.animation = 1;
-            lightningWeapon.name = "TeslaCoil_LightningWeapon";
+            lightningWeapon.name = "WeaponModel_TeslaCoilLightning";
 
-            // Edit lightning projectile to split less
+            // Edit lightning projectile to have less splitting, pierce, and damage
             ProjectileModel lightningProjectile = lightningWeapon.projectile;
             lightningProjectile.pierce = towerModel.GetAttackModel().weapons.First(w => w.name == "WeaponModel_Weapon").projectile.pierce + 2f;
             lightningProjectile.GetBehavior<LightningModel>().splitRange = towerModel.range / 2.5f;
             int splits = 1;
-            if(towerModel.appliedUpgrades.Contains(UpgradeType.LongRangeTacks)) splits++;
             if(towerModel.appliedUpgrades.Contains(UpgradeType.SuperRangeTacks)) splits++;
             lightningProjectile.GetBehavior<LightningModel>().splits = splits;
 
-            // Tag the lightning effect with a unique guid 
-            CreateLightningEffectModel lightningEffect = new CreateLightningEffectModel("TeslaCoil_CreateLightningEffect", 0.3f,
+            // Tag the lightning effect with a unique guid
+            CreateLightningEffectModel lightningEffect = new CreateLightningEffectModel("CreateLightningEffect_", 0.3f,
 				new PrefabReference[]
 				{
 					new PrefabReference() { guidRef = "TeslaCoilLightning-LightningSmall1" },
@@ -85,7 +84,7 @@ namespace TeslaCoil
             lightningProjectile.collisionPasses = new[] { 0, 1 };
 
             // Add first lightning weapon
-            towerModel.GetAttackModel().name = "TeslaCoil_LightningAttack";
+            towerModel.GetAttackModel().name = "AttackModel_TeslaCoilLightning";
             towerModel.GetAttackModel().SetWeapon(lightningWeapon, 0);
             towerModel.GetAttackModel().RemoveBehavior<TargetCloseModel>();
             towerModel.GetAttackModel().AddBehavior(new RandomTargetModel("RandomTargetModel", true, false));
@@ -98,13 +97,13 @@ namespace TeslaCoil
 
             for(int i = 1; i < count; i++)
             {
-                towerModel.AddBehavior(towerModel.GetAttackModel("TeslaCoil_LightningAttack").Duplicate());
+                towerModel.AddBehavior(towerModel.GetAttackModel("AttackModel_TeslaCoilLightning").Duplicate());
             }
 
             // Buff laser shock ticks
             foreach(AddBehaviorToBloonModel addBehavior in towerModel.GetDescendants<AddBehaviorToBloonModel>().ToArray())
             {
-                addBehavior.lifespan = 1.55f;
+                addBehavior.lifespan = 2.05f;
                 addBehavior.GetBehavior<DamageOverTimeModel>().Interval = 0.5f;
             }
 

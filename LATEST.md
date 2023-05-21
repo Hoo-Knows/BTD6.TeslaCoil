@@ -1,3 +1,4 @@
-- Balance changes
-	- Tweaked prices
-	- Tweaked crosspath related values
+- Balanced crosspaths to be more specialized and distinctive
+	- Top path focuses on stalling lategame
+	- Middle path focuses on excelling in early to midgame
+	- Bottom path focuses on midgame MOAB damage and ceram cleanup
